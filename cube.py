@@ -95,7 +95,6 @@ def Cube():
 
     glEnd()
 
-
 def main():
     pygame.init()
     display = (800,600)
