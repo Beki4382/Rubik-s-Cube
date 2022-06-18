@@ -1,5 +1,4 @@
 import pygame
-import random
 from pygame.locals import *
 
 from OpenGL.GL import *
@@ -38,16 +37,16 @@ class Cube():
             self.current_i[i] if dir > 0 else self.N - 1 - self.current_i[i] )
 
     def transformMat(self):
-        scaleA = [[s*self.scale for s in a] for a in self.rot]  
-        scaleT = [(p-(self.N-1)/2)*2.1*self.scale for p in self.current_i] 
+        scaleA = [[s*self.scale for s in a] for a in self.rot]
+        scaleT = [(p-(self.N-1)/2)*2.1*self.scale for p in self.current_i]
         return [*scaleA[0], 0, *scaleA[1], 0, *scaleA[2], 0, *scaleT, 1]
 
     def draw(self, col, surf, vert, animate, angle, axis, slice, dir):
 
         glPushMatrix()
         if animate and self.isAffected(axis, slice, dir):
-            glRotatef( angle*dir, *[1 if i==axis else 0 for i in range(3)] )
-        glMultMatrixf( self.transformMat() )
+            glRotatef( angle*dir, *[1 if i == axis else 0 for i in range(3)] )
+        glMultMatrixf(self.transformMat())
 
         glBegin(GL_QUADS)
         for i in range(len(surf)):
@@ -58,7 +57,8 @@ class Cube():
 
         glPopMatrix()
 
-class EntireCube():
+
+class EntireCube:
     def __init__(self, N, scale):
         self.N = N
         cr = range(self.N)
@@ -66,13 +66,13 @@ class EntireCube():
 
     def mainloop(self):
 
-        rot_cube_map  = { K_UP: (-1, 0), K_DOWN: (1, 0), K_LEFT: (0, -1), K_RIGHT: (0, 1)}
+        rot_cube_map = {K_UP: (-1, 0), K_DOWN: (1, 0), K_LEFT: (0, -1), K_RIGHT: (0, 1)}
         rot_slice_map = {
             K_1: (0, 0, 1), K_2: (0, 1, 1), K_3: (0, 2, 1), K_4: (1, 0, 1), K_5: (1, 1, 1),
             K_6: (1, 2, 1), K_7: (2, 0, 1), K_8: (2, 1, 1), K_9: (2, 2, 1),
             K_F1: (0, 0, -1), K_F2: (0, 1, -1), K_F3: (0, 2, -1), K_F4: (1, 0, -1), K_F5: (1, 1, -1),
             K_F6: (1, 2, -1), K_F7: (2, 0, -1), K_F8: (2, 1, -1), K_F9: (2, 2, -1),
-        }  
+        }
 
         ang_x, ang_y, rot_cube = 0, 0, (0, 0)
         animate, animate_ang, animate_speed = False, 0, 5
@@ -117,20 +117,86 @@ class EntireCube():
             pygame.display.flip()
             pygame.time.wait(10)
 
+
+def welcome():
+    pygame.init()
+    display = (800, 600)
+    welcome_screen = pygame.display.set_mode(display)
+    coverimage = pygame.image.load('welcomeimage.png')
+
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                quit()
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                x, y = pygame.mouse.get_pos()
+                if 40 < x < 200 and 150 < y < 300:
+                    main()
+                if 40 < x < 200 and 350 < y < 500:
+                    guide()
+                if 600 < x < 760 and 150 < y < 300:
+                    about()
+                if 600 < x < 760 and 350 < y < 500:
+                    pygame.quit()
+                    quit()
+        welcome_screen.blit(coverimage, (0, 0))
+        pygame.display.update()
+
+
 def main():
 
     pygame.init()
     display = (800,600)
     pygame.display.set_mode(display, DOUBLEBUF|OPENGL)
-    glEnable(GL_DEPTH_TEST) 
+    glEnable(GL_DEPTH_TEST)
 
     glMatrixMode(GL_PROJECTION)
     gluPerspective(45, (display[0]/display[1]), 0.1, 50.0)
 
-    NewEntireCube = EntireCube(3, 1.5) 
+    NewEntireCube = EntireCube(3, 1.5)
     NewEntireCube.mainloop()
 
+
+def guide():
+    pygame.init()
+    display = (800, 600)
+    guide_screen = pygame.display.set_mode(display)
+    guideimage = pygame.image.load('guideImage.png')
+
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                quit()
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                x, y = pygame.mouse.get_pos()
+                if 10 < y < 100 and 700 < x < 800:
+                    welcome()
+        guide_screen.blit(guideimage, (0, 0))
+        pygame.display.update()
+
+
+def about():
+    pygame.init()
+    display = (800, 600)
+    about_screen = pygame.display.set_mode(display)
+    aboutimage = pygame.image.load('aboutimage.png')
+
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                quit()
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                x, y = pygame.mouse.get_pos()
+                if 10 < y < 100 and 700 < x < 800:
+                    welcome()
+        about_screen.blit(aboutimage, (0, 0))
+        pygame.display.update()
+
+
 if __name__ == '__main__':
-    main()
+    welcome()
     pygame.quit()
     quit()
